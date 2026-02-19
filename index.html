@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PandaBot - Valorant Round Caller</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>PandaBot Round Caller</h1>
+        <p>
+          Pick a map, mark available areas, and let PandaBot make the call.
+        </p>
+      </header>
+
+      <section class="panel">
+        <label for="mapSelect">Map</label>
+        <select id="mapSelect" aria-label="Select map"></select>
+      </section>
+
+      <section class="panel call-panel">
+        <button id="callBtn" type="button" class="primary">Call Round</button>
+        <article id="callOutput" class="call-output" aria-live="polite">
+          Waiting for the next call...
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2>Available Areas</h2>
+          <button id="allAvailableBtn" type="button" class="secondary">
+            Mark All Available
+          </button>
+        </div>
+        <p class="hint">
+          Disable any area that feels risky this round. PandaBot only rushes
+          to enabled areas.
+        </p>
+        <div id="areasList" class="areas-list" aria-live="polite"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Call History</h2>
+        <ul id="historyList" class="history-list">
+          <li>No calls yet.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
