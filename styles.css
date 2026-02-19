@@ -1,12 +1,15 @@
 :root {
+  --bg-top: #1e1b4b;
   --bg: #0f172a;
-  --panel: #1e293b;
+  --panel-bg: rgb(30 41 59 / 0.85);
   --panel-border: #334155;
+  --surface: #0b1120;
   --text: #e2e8f0;
   --muted: #94a3b8;
   --accent: #22d3ee;
   --accent-strong: #06b6d4;
-  --danger: #ef4444;
+  --secondary-bg: #172554;
+  --secondary-border: #1d4ed8;
 }
 
 * {
@@ -16,9 +19,37 @@
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(circle at top, #1e1b4b, var(--bg) 50%);
+  background: radial-gradient(circle at top, var(--bg-top), var(--bg) 50%);
   color: var(--text);
   min-height: 100vh;
+}
+
+body.god-theme {
+  --bg-top: #7c5b10;
+  --bg: #2a1e07;
+  --panel-bg: rgb(70 48 15 / 0.9);
+  --panel-border: #8d6c2a;
+  --surface: #1f1606;
+  --text: #fff5db;
+  --muted: #d7c089;
+  --accent: #facc15;
+  --accent-strong: #f59e0b;
+  --secondary-bg: #5b4515;
+  --secondary-border: #c29c3d;
+}
+
+body.default-theme {
+  --bg-top: #5b1212;
+  --bg: #1d0909;
+  --panel-bg: rgb(68 20 20 / 0.9);
+  --panel-border: #8f2d2d;
+  --surface: #220b0b;
+  --text: #ffe4e6;
+  --muted: #f2a9af;
+  --accent: #f87171;
+  --accent-strong: #ef4444;
+  --secondary-bg: #5f1d1d;
+  --secondary-border: #b63a3a;
 }
 
 .container {
@@ -40,7 +71,7 @@ header p {
 
 .panel {
   border: 1px solid var(--panel-border);
-  background-color: rgb(30 41 59 / 0.85);
+  background-color: var(--panel-bg);
   border-radius: 12px;
   padding: 1rem;
 }
@@ -55,7 +86,7 @@ select {
   width: 100%;
   border-radius: 8px;
   border: 1px solid var(--panel-border);
-  background: #0b1120;
+  background: var(--surface);
   color: var(--text);
   padding: 0.65rem 0.75rem;
   font-size: 1rem;
@@ -91,7 +122,7 @@ h2 {
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
   border: 1px solid var(--panel-border);
-  background: #0b1120;
+  background: var(--surface);
   color: var(--text);
 }
 
@@ -134,8 +165,8 @@ button.primary {
 }
 
 button.secondary {
-  background: #172554;
-  border: 1px solid #1d4ed8;
+  background: var(--secondary-bg);
+  border: 1px solid var(--secondary-border);
 }
 
 .call-output {
@@ -143,7 +174,7 @@ button.secondary {
   border-radius: 10px;
   padding: 1rem;
   min-height: 68px;
-  background: #0b1120;
+  background: var(--surface);
   line-height: 1.4;
 }
 

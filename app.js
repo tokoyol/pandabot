@@ -44,6 +44,7 @@ const allAvailableBtn = document.getElementById("allAvailableBtn");
 const callBtn = document.getElementById("callBtn");
 const callOutput = document.getElementById("callOutput");
 const historyList = document.getElementById("historyList");
+const pageBody = document.body;
 
 let state = {
   selectedMap: "",
@@ -67,6 +68,7 @@ function initialize() {
   mapSelect.addEventListener("change", onMapChange);
   allAvailableBtn.addEventListener("click", markAllAvailable);
   callBtn.addEventListener("click", callRound);
+  setSiteTheme("normal");
 }
 
 function onMapChange() {
@@ -139,6 +141,7 @@ function showRushCall(area) {
   const tagLabel = isGodCall ? "GOD CALL" : "Rush";
   const tagClass = isGodCall ? "tag-god" : "tag-rush";
   const historyPrefix = isGodCall ? "GOD CALL" : "RUSH";
+  setSiteTheme(isGodCall ? "god" : "normal");
 
   callOutput.innerHTML = `
     <span class="tag ${tagClass}">${tagLabel}</span>
@@ -148,6 +151,7 @@ function showRushCall(area) {
 }
 
 function showDefaultCall(noAreasAvailable) {
+  setSiteTheme("default");
   const reason = noAreasAvailable
     ? "All areas are currently disabled."
     : "PandaBot rolled the 10% default chance :O";
@@ -175,4 +179,17 @@ function prependHistory(entry) {
 
 function pickRandom(items) {
   return items[Math.floor(Math.random() * items.length)];
+}
+
+function setSiteTheme(theme) {
+  pageBody.classList.remove("god-theme", "default-theme");
+
+  if (theme === "god") {
+    pageBody.classList.add("god-theme");
+    return;
+  }
+
+  if (theme === "default") {
+    pageBody.classList.add("default-theme");
+  }
 }
