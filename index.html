@@ -12,13 +12,23 @@
       <header>
         <h1>PandaBot Round Caller</h1>
         <p>
-          Pick a map, mark available areas, and let PandaBot make the call.
+          Pick a map and side, then let PandaBot show you a calling MASTACLASS. BLEHHHHHHHHH
         </p>
-      </header>
-
+      </header> 
       <section class="panel">
-        <label for="mapSelect">Map</label>
-        <select id="mapSelect" aria-label="Select map"></select>
+        <div class="control-row">
+          <div>
+            <label for="mapSelect">Map</label>
+            <select id="mapSelect" aria-label="Select map"></select>
+          </div>
+          <div>
+            <label for="sideSelect">Side</label>
+            <select id="sideSelect" aria-label="Select side">
+              <option value="attack">Attack</option>
+              <option value="defense">Defense</option>
+            </select>
+          </div>
+        </div>
       </section>
 
       <section class="panel call-panel">
@@ -28,7 +38,7 @@
         </article>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="areasPanel">
         <div class="panel-title-row">
           <h2>Available Areas</h2>
           <button id="allAvailableBtn" type="button" class="secondary">

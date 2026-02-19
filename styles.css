@@ -92,6 +92,12 @@ select {
   font-size: 1rem;
 }
 
+.control-row {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
 .panel-title-row {
   display: flex;
   align-items: center;
@@ -198,6 +204,11 @@ button.secondary {
   color: #fecaca;
 }
 
+.call-output .tag-defense {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
 .call-output .tag-god {
   background: linear-gradient(135deg, #f59e0b, #facc15);
   color: #3b2f00;
@@ -217,4 +228,8 @@ button.secondary {
 .off {
   color: #64748b;
   text-decoration: line-through;
+}
+
+.is-hidden {
+  display: none;
 }
