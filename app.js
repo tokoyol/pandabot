@@ -1,7 +1,9 @@
 const attackMapData = {
+  Abyss: ["A Main", "B Main", "Mid to A", "Mid to B", "A Split", "B Split"],
   Ascent: ["A Main", "B Main", "Mid to A", "Mid to B", "A Split", "B Split"],
   Bind: ["A Short", "A Bath", "B Long", "Hookah"],
   Breeze: ["A Main", "Mid Doors", "B Main", "A Split", "B Split", "Elbow"],
+  Corrode: ["A Main", "B Main", "Mid to A", "Mid to B", "A Split"],
   Fracture: ["A Main", "A Drop", "B Main", "Arcade", "A Split", "B Split"],
   Haven: ["A Long", "A Short", "C Long", "Garage", "B to A", "B to C", "Mid to B", "C Split", "A Split"],
   Icebox: ["A Main", "B Main", "Mid to A", "Mid to B"],
@@ -13,9 +15,11 @@ const attackMapData = {
 
 // Template only. Populate per-map locations later.
 const defenseTakeSpaceMapData = {
+  Abyss: ["A Main", "B Main", "Mid"],
   Ascent: ["A Main", "B Main", "Tree", "Top Mid"],
   Bind: ["A Short", "A Bath", "B Long", "Sands"],
   Breeze: ["A Main", "Mid", "B Main", "Elbow"],
+  Corrode: ["A Main", "B Main", "Mid"],
   Fracture: ["A Main", "Satellite", "B Main", "Arcade"],
   Haven: ["A Long", "A Short", "C Long", "Mid"],
   Icebox: ["A Main", "B Main", "Mid"],
@@ -27,9 +31,11 @@ const defenseTakeSpaceMapData = {
 
 // Template only. Populate per-map locations later.
 const defenseTrapMapData = {
+  Abyss: ["A Main", "B", "Mid"],
   Ascent: ["A", "B", "Tree", "Bottom Mid"],
   Bind: ["A", "Showers", "B", "Hookah"],
   Breeze: ["A", "Mid", "B"],
+  Corrode: ["Elbow", "B Main", "Mid"],
   Fracture: ["A Main", "B Main", "Arcade"],
   Haven: ["A Long", "Mid Window", "C Long", "Garage", "A Short"],
   Icebox: ["A Main", "B Main", "Kitchen", "Orange"],
@@ -40,9 +46,11 @@ const defenseTrapMapData = {
 }
 
 const defenseStackMapData = {
+  Abyss: ["A", "B"],
   Ascent: ["A", "B", "Tree", "Bottom Mid"],
   Bind: ["A", "Showers", "B", "Hookah"],
   Breeze: ["A", "B"],
+  Corrode: ["A", "B", "Mid"],
   Fracture: ["A", "B"],
   Haven: ["A", "B", "C", "Garage", "A Short"],
   Icebox: ["A", "B"],
