@@ -424,29 +424,17 @@ async function assignRoles() {
       assignedRoles = names.map((_, i) => shuffled[i]);
     }
 
-    // Pre-pick one agent per player — non-fill roles first, then fill
-    // excludes already-taken agents so there are never duplicates
-    const agents = new Array(assignedRoles.length);
+    // Pre-pick one agent per player — always unique (no duplicates)
+    const agents = [];
     const taken  = new Set();
 
-    // Pass 1: assign agents for all non-fill roles
-    assignedRoles.forEach((role, i) => {
-      if (role !== "fill") {
-        const agent = pickRandom(valorantAgents[role]);
-        agents[i] = agent;
-        taken.add(agent);
-      }
-    });
-
-    // Pass 2: assign agent for fill, excluding already-taken agents
-    assignedRoles.forEach((role, i) => {
-      if (role === "fill") {
-        const available = allAgents.filter(a => !taken.has(a));
-        const agent = pickRandom(available.length > 0 ? available : allAgents);
-        agents[i] = agent;
-        taken.add(agent);
-      }
-    });
+    for (const role of assignedRoles) {
+      const pool = role === "fill" ? allAgents : valorantAgents[role];
+      const available = pool.filter(a => !taken.has(a));
+      const agent = pickRandom(available.length > 0 ? available : pool);
+      agents.push(agent);
+      taken.add(agent);
+    }
 
     // ── Phase 1: Role reels ──────────────────────────────────────────────────
     const { rows: roleRows, strips: roleStrips } = buildReelRows(
@@ -477,17 +465,13 @@ async function assignRoles() {
     // ── Phase 2: Agent reels (one at a time) ──────────────────────────────────
     teamOutput.innerHTML = "";
 
-    const agentConfigs = names.map((name, i) => {
+    for (let i = 0; i < names.length; i++) {
       const role = assignedRoles[i];
-      return {
-        name,
+      const { rows, strips } = buildReelRows([{
+        name: names[i],
         pool: role === "fill" ? allAgents : valorantAgents[role],
         winner: agents[i]
-      };
-    });
-
-    for (let i = 0; i < agentConfigs.length; i++) {
-      const { rows, strips } = buildReelRows([agentConfigs[i]]);
+      }]);
       teamOutput.appendChild(rows[0]);
       await delay(80);
       await animateStrip(strips[0]);
