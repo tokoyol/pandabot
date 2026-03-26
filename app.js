@@ -141,6 +141,13 @@ const allAgents = [
   ...valorantAgents.sentinel
 ];
 
+// ─── Reel animation constants ────────────────────────────────────────────────
+const REEL_ITEM_WIDTH   = 110;   // px – width of each slot item
+const REEL_TOTAL_ITEMS  = 50;    // total items per strip (extra tail for safety on wide screens)
+const REEL_WINNER_POS   = 42;    // 0-based index where the winning item is placed
+const REEL_DURATION_MS  = 3200;  // spin duration in ms
+const ROLE_DISPLAY_POOL = ["Duelist", "Initiator", "Controller", "Sentinel", "Fill"];
+
 const mapSelect = document.getElementById("mapSelect");
 const sideSelect = document.getElementById("sideSelect");
 const areasPanel = document.getElementById("areasPanel");
@@ -384,7 +391,11 @@ function getEnabledAreas(areaPool) {
   return areaPool.filter((area) => Boolean(state.areaAvailability[area]));
 }
 
-function assignRoles() {
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function assignRoles() {
   const inputs = document.querySelectorAll(".player-input");
   const names = Array.from(inputs).map(i => i.value.trim()).filter(n => n.length > 0);
 
@@ -394,28 +405,201 @@ function assignRoles() {
     return;
   }
 
-  const roles = ["duelist", "initiator", "controller", "sentinel", "fill"];
-  const shuffledRoles = [...roles].sort(() => Math.random() - 0.5);
+  assignRolesBtn.disabled = true;
+  teamOutput.innerHTML = "";
+  teamOutput.classList.remove("is-hidden");
 
-  const assignments = names.map((name, i) => {
-    const role = shuffledRoles[i];
-    const agent = role === "fill"
-      ? pickRandom(allAgents)
-      : pickRandom(valorantAgents[role]);
-    return { name, role, agent };
+  try {
+    const toLabel = r => r === "fill" ? "Fill" : r.charAt(0).toUpperCase() + r.slice(1);
+
+    // Pre-roll jackpot (1%) — all players get Duelist
+    const isJackpot = Math.random() < 0.01;
+    let assignedRoles;
+
+    if (isJackpot) {
+      assignedRoles = names.map(() => "duelist");
+    } else {
+      const roles = ["duelist", "initiator", "controller", "sentinel", "fill"];
+      const shuffled = [...roles].sort(() => Math.random() - 0.5);
+      assignedRoles = names.map((_, i) => shuffled[i]);
+    }
+
+    // Pre-pick one agent per player — non-fill roles first, then fill
+    // excludes already-taken agents so there are never duplicates
+    const agents = new Array(assignedRoles.length);
+    const taken  = new Set();
+
+    // Pass 1: assign agents for all non-fill roles
+    assignedRoles.forEach((role, i) => {
+      if (role !== "fill") {
+        const agent = pickRandom(valorantAgents[role]);
+        agents[i] = agent;
+        taken.add(agent);
+      }
+    });
+
+    // Pass 2: assign agent for fill, excluding already-taken agents
+    assignedRoles.forEach((role, i) => {
+      if (role === "fill") {
+        const available = allAgents.filter(a => !taken.has(a));
+        const agent = pickRandom(available.length > 0 ? available : allAgents);
+        agents[i] = agent;
+        taken.add(agent);
+      }
+    });
+
+    // ── Phase 1: Role reels ──────────────────────────────────────────────────
+    const { rows: roleRows, strips: roleStrips } = buildReelRows(
+      names.map((name, i) => ({
+        name,
+        pool: ROLE_DISPLAY_POOL,
+        winner: toLabel(assignedRoles[i])
+      }))
+    );
+    roleRows.forEach(row => teamOutput.appendChild(row));
+
+    await delay(80); // allow DOM to paint before measuring widths
+    await Promise.all(roleStrips.map((strip, i) => animateStrip(strip, i * 100)));
+
+    // Jackpot reveal
+    if (isJackpot) {
+      const banner = document.createElement("div");
+      banner.className = "jackpot-banner";
+      banner.textContent = "🎰  JACKPOT — 5 DUELISTS!  🎰";
+      teamOutput.prepend(banner);
+      setSiteTheme("god");
+      await delay(1800);
+      banner.remove();
+    }
+
+    await delay(500);
+
+    // ── Phase 2: Agent reels (one at a time) ──────────────────────────────────
+    teamOutput.innerHTML = "";
+
+    const agentConfigs = names.map((name, i) => {
+      const role = assignedRoles[i];
+      return {
+        name,
+        pool: role === "fill" ? allAgents : valorantAgents[role],
+        winner: agents[i]
+      };
+    });
+
+    for (let i = 0; i < agentConfigs.length; i++) {
+      const { rows, strips } = buildReelRows([agentConfigs[i]]);
+      teamOutput.appendChild(rows[0]);
+      await delay(80);
+      await animateStrip(strips[0]);
+      await delay(300);
+    }
+
+    // ── Final results ────────────────────────────────────────────────────────
+    if (!isJackpot) setSiteTheme("normal");
+
+    teamOutput.innerHTML = names.map((name, i) => `
+      <div class="team-row${isJackpot ? " team-row-jackpot" : ""}">
+        <span class="team-player">${name}</span>
+        <span class="tag tag-role-${assignedRoles[i]}">${toLabel(assignedRoles[i])}</span>
+        <span class="team-agent">${agents[i]}</span>
+      </div>
+    `).join("");
+
+  } finally {
+    assignRolesBtn.disabled = false;
+  }
+}
+
+// Builds N reel rows from an array of { name, pool, winner } configs.
+// Returns the row DOM elements and their strip elements for animation.
+function buildReelRows(configs) {
+  const rows   = [];
+  const strips = [];
+
+  configs.forEach(({ name, pool, winner }) => {
+    const row = document.createElement("div");
+    row.className = "reel-row";
+
+    const label = document.createElement("div");
+    label.className = "reel-player-label";
+    label.textContent = name; // textContent avoids any HTML injection
+
+    const viewport = document.createElement("div");
+    viewport.className = "reel-viewport";
+
+    const strip = document.createElement("div");
+    strip.className = "reel-strip";
+
+    for (let i = 0; i < REEL_TOTAL_ITEMS; i++) {
+      const el  = document.createElement("div");
+      const val = (i === REEL_WINNER_POS) ? winner : pickRandom(pool);
+      el.className  = `reel-item ${getReelItemClass(val)}`;
+      el.textContent = val;
+      if (i === REEL_WINNER_POS) el.dataset.winner = "true";
+      strip.appendChild(el);
+    }
+
+    const highlight = document.createElement("div");
+    highlight.className = "reel-highlight";
+
+    viewport.appendChild(strip);
+    viewport.appendChild(highlight);
+    row.appendChild(label);
+    row.appendChild(viewport);
+
+    rows.push(row);
+    strips.push(strip);
   });
 
-  const roleLabel = r => r === "fill" ? "Fill" : r.charAt(0).toUpperCase() + r.slice(1);
+  return { rows, strips };
+}
 
-  teamOutput.innerHTML = assignments.map(({ name, role, agent }) => `
-    <div class="team-row">
-      <span class="team-player">${name}</span>
-      <span class="tag tag-role-${role}">${roleLabel(role)}</span>
-      <span class="team-agent">${agent}</span>
-    </div>
-  `).join("");
+// Maps a role display name or agent name to its reel item CSS class.
+function getReelItemClass(value) {
+  const roleMap = {
+    Duelist:    "reel-item-duelist",
+    Initiator:  "reel-item-initiator",
+    Controller: "reel-item-controller",
+    Sentinel:   "reel-item-sentinel",
+    Fill:       "reel-item-fill"
+  };
+  if (roleMap[value]) return roleMap[value];
 
-  teamOutput.classList.remove("is-hidden");
+  // Agent name → look up which pool it belongs to
+  if (valorantAgents.duelist.includes(value))    return "reel-item-duelist";
+  if (valorantAgents.initiator.includes(value))  return "reel-item-initiator";
+  if (valorantAgents.controller.includes(value)) return "reel-item-controller";
+  if (valorantAgents.sentinel.includes(value))   return "reel-item-sentinel";
+  return "reel-item-fill"; // fallback
+}
+
+// Animates a single reel strip. Returns a Promise that resolves when done.
+function animateStrip(strip, startDelay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const viewport      = strip.parentElement;
+      const containerWidth = viewport.clientWidth;
+      const centerOffset  = containerWidth / 2 - REEL_ITEM_WIDTH / 2;
+      const targetX       = centerOffset - REEL_WINNER_POS * REEL_ITEM_WIDTH;
+
+      // Reset position without animation
+      strip.style.transition = "none";
+      strip.style.transform  = "translateX(0)";
+
+      // Double rAF ensures the reset is committed before the transition starts
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        strip.style.transition = `transform ${REEL_DURATION_MS}ms cubic-bezier(0.12, 0, 0.06, 1)`;
+        strip.style.transform  = `translateX(${targetX}px)`;
+
+        setTimeout(() => {
+          const winnerEl = strip.querySelector("[data-winner]");
+          if (winnerEl) winnerEl.classList.add("reel-item-winner");
+          strip.style.willChange = "auto"; // release compositor layer
+          resolve();
+        }, REEL_DURATION_MS);
+      }));
+    }, startDelay);
+  });
 }
 
 function pickRandom(items) {

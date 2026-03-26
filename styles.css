@@ -314,3 +314,144 @@ button.secondary {
   background: linear-gradient(135deg, #f59e0b, #facc15);
   color: #3b2f00;
 }
+
+/* ─── Reel animation ─────────────────────────────────────────────────────── */
+.reel-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.reel-player-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.reel-viewport {
+  position: relative;       /* required: contains the absolute strip */
+  height: 56px;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--surface);
+}
+
+/* Gradient fade on left/right edges — kept narrow so they don't reach center highlight */
+.reel-viewport::before,
+.reel-viewport::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.reel-viewport::before {
+  left: 0;
+  background: linear-gradient(to right, var(--surface), transparent);
+}
+
+.reel-viewport::after {
+  right: 0;
+  background: linear-gradient(to left, var(--surface), transparent);
+}
+
+.reel-strip {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  will-change: transform;
+}
+
+.reel-item {
+  width: 110px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Role/agent colors — hardcoded so they stay stable during god-theme flashes */
+.reel-item-duelist    { background: rgba(127, 29, 29, 0.55);  color: #fca5a5; }
+.reel-item-initiator  { background: rgba(20,  83, 45, 0.55);  color: #86efac; }
+.reel-item-controller { background: rgba(59,   7, 100, 0.55); color: #d8b4fe; }
+.reel-item-sentinel   { background: rgba(30,  58, 95, 0.55);  color: #93c5fd; }
+.reel-item-fill       { background: rgba(120, 80, 10, 0.55);  color: #fde68a; }
+
+.reel-item-winner {
+  filter: brightness(1.6);
+  box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.12);
+}
+
+/* Center bracket — sits above the strip (z-index 3) */
+.reel-highlight {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 100%;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 3;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.35),
+              inset 0 0 8px rgba(34, 211, 238, 0.05);
+}
+
+/* Inward-pointing triangle markers at top and bottom of bracket */
+.reel-highlight::before,
+.reel-highlight::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+}
+
+.reel-highlight::before {
+  top: 3px;
+  border-top: 8px solid var(--accent);
+}
+
+.reel-highlight::after {
+  bottom: 3px;
+  border-bottom: 8px solid var(--accent);
+}
+
+/* ─── Jackpot ────────────────────────────────────────────────────────────── */
+.jackpot-banner {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f59e0b, #facc15);
+  color: #3b2f00;
+  border-radius: 8px;
+  letter-spacing: 0.06em;
+  animation: jackpot-pulse 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes jackpot-pulse {
+  from { transform: scale(1);    filter: brightness(1); }
+  to   { transform: scale(1.02); filter: brightness(1.1); }
+}
+
+.team-row-jackpot {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+}
