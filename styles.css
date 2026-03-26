@@ -233,3 +233,84 @@ button.secondary {
 .is-hidden {
   display: none;
 }
+
+/* Team Selector */
+.team-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.player-input {
+  background: var(--surface);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.player-input::placeholder {
+  color: var(--muted);
+}
+
+.team-assign-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  margin-top: 0.75rem;
+}
+
+.team-output {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+}
+
+.team-player {
+  font-weight: 600;
+  flex: 1;
+}
+
+.team-agent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tag-role-duelist {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.tag-role-initiator {
+  background: #14532d;
+  color: #86efac;
+}
+
+.tag-role-controller {
+  background: #3b0764;
+  color: #d8b4fe;
+}
+
+.tag-role-sentinel {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+.tag-role-fill {
+  background: linear-gradient(135deg, #f59e0b, #facc15);
+  color: #3b2f00;
+}

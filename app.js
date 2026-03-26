@@ -127,6 +127,20 @@ const defenseStackTemplates = [
 const DEFAULT_DEFENSE_AREAS = ["A", "B", "Mid"];
 const GOD_CALL_CHANCE = 0.05;
 
+const valorantAgents = {
+  duelist:    ["Jett", "Reyna", "Raze", "Phoenix", "Neon", "Iso", "Waylay", "Yoru"],
+  initiator:  ["Sova", "Breach", "Skye", "KAY/O", "Fade", "Gekko", "Tejo"],
+  controller: ["Brimstone", "Omen", "Viper", "Astra", "Harbor", "Clove", "Miks"],
+  sentinel:   ["Sage", "Cypher", "Killjoy", "Chamber", "Deadlock", "Vyse"]
+};
+
+const allAgents = [
+  ...valorantAgents.duelist,
+  ...valorantAgents.initiator,
+  ...valorantAgents.controller,
+  ...valorantAgents.sentinel
+];
+
 const mapSelect = document.getElementById("mapSelect");
 const sideSelect = document.getElementById("sideSelect");
 const areasPanel = document.getElementById("areasPanel");
@@ -135,6 +149,8 @@ const allAvailableBtn = document.getElementById("allAvailableBtn");
 const callBtn = document.getElementById("callBtn");
 const callOutput = document.getElementById("callOutput");
 const historyList = document.getElementById("historyList");
+const assignRolesBtn = document.getElementById("assignRolesBtn");
+const teamOutput = document.getElementById("teamOutput");
 const pageBody = document.body;
 
 let state = {
@@ -162,6 +178,7 @@ function initialize() {
   sideSelect.addEventListener("change", onSideChange);
   allAvailableBtn.addEventListener("click", markAllAvailable);
   callBtn.addEventListener("click", callRound);
+  assignRolesBtn.addEventListener("click", assignRoles);
   updateSideUI();
   setSiteTheme("normal");
 }
@@ -365,6 +382,40 @@ function getDefenseStackAreas(mapName) {
 
 function getEnabledAreas(areaPool) {
   return areaPool.filter((area) => Boolean(state.areaAvailability[area]));
+}
+
+function assignRoles() {
+  const inputs = document.querySelectorAll(".player-input");
+  const names = Array.from(inputs).map(i => i.value.trim()).filter(n => n.length > 0);
+
+  if (names.length === 0) {
+    teamOutput.innerHTML = `<p class="hint">Enter at least one player name first!</p>`;
+    teamOutput.classList.remove("is-hidden");
+    return;
+  }
+
+  const roles = ["duelist", "initiator", "controller", "sentinel", "fill"];
+  const shuffledRoles = [...roles].sort(() => Math.random() - 0.5);
+
+  const assignments = names.map((name, i) => {
+    const role = shuffledRoles[i];
+    const agent = role === "fill"
+      ? pickRandom(allAgents)
+      : pickRandom(valorantAgents[role]);
+    return { name, role, agent };
+  });
+
+  const roleLabel = r => r === "fill" ? "Fill" : r.charAt(0).toUpperCase() + r.slice(1);
+
+  teamOutput.innerHTML = assignments.map(({ name, role, agent }) => `
+    <div class="team-row">
+      <span class="team-player">${name}</span>
+      <span class="tag tag-role-${role}">${roleLabel(role)}</span>
+      <span class="team-agent">${agent}</span>
+    </div>
+  `).join("");
+
+  teamOutput.classList.remove("is-hidden");
 }
 
 function pickRandom(items) {

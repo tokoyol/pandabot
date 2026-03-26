@@ -58,6 +58,22 @@
           <li>No calls yet.</li>
         </ul>
       </section>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2>Team Selector</h2>
+        </div>
+        <p class="hint">Enter your 5-man stack and PandaBot will assign roles and agents. Fill gets a completely random agent!</p>
+        <div class="team-inputs">
+          <input type="text" class="player-input" placeholder="Player 1" />
+          <input type="text" class="player-input" placeholder="Player 2" />
+          <input type="text" class="player-input" placeholder="Player 3" />
+          <input type="text" class="player-input" placeholder="Player 4" />
+          <input type="text" class="player-input" placeholder="Player 5" />
+        </div>
+        <button id="assignRolesBtn" type="button" class="primary team-assign-btn">Assign Roles</button>
+        <div id="teamOutput" class="team-output is-hidden"></div>
+      </section>
     </main>
 
     <script src="./app.js"></script>
