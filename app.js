@@ -131,7 +131,7 @@ const valorantAgents = {
   duelist:    ["Jett", "Reyna", "Raze", "Phoenix", "Neon", "Iso", "Waylay", "Yoru"],
   initiator:  ["Sova", "Breach", "Skye", "KAY/O", "Fade", "Gekko", "Tejo"],
   controller: ["Brimstone", "Omen", "Viper", "Astra", "Harbor", "Clove", "Miks"],
-  sentinel:   ["Sage", "Cypher", "Killjoy", "Chamber", "Deadlock", "Vyse"]
+  sentinel:   ["Sage", "Cypher", "Killjoy", "Chamber", "Deadlock", "Vyse", "Veto"]
 };
 
 const allAgents = [
